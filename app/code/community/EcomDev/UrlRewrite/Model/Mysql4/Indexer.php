@@ -460,13 +460,22 @@ class EcomDev_UrlRewrite_Model_Mysql4_Indexer extends Mage_Index_Model_Mysql4_Ab
                 array()
             );
 
-        $requestPathExpr = $this->_quoteInto(
-            'TRIM(LEADING ? FROM CONCAT(' 
-                . 'IFNULL(GROUP_CONCAT(parent_url_key.url_key ORDER BY parent_url_key.level ASC SEPARATOR ?), ?), ' 
-                . '?, url_key.url_key' 
-            . '))',
-            '/'
-        );
+        if (Mage::getStoreConfig('catalog/shorturl/active')) {
+            $requestPathExpr = $this->_quoteInto(
+                'TRIM(LEADING ? FROM url_key.url_key)',
+                '/'
+            );
+        }
+        else {
+            $requestPathExpr = $this->_quoteInto(
+                'TRIM(LEADING ? FROM CONCAT('
+                . 'IFNULL(GROUP_CONCAT(parent_url_key.url_key ORDER BY parent_url_key.level ASC SEPARATOR ?), ?), '
+                . '?, url_key.url_key'
+                . '))',
+                '/'
+            );
+        }
+
         $columns = array(
             'store_id' => 'url_key.store_id',
             'id_path' => new Zend_Db_Expr($this->_quoteInto(
