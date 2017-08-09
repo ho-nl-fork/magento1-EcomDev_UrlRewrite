@@ -500,6 +500,7 @@ $this->getConnection()->createTable($table);
 $this->getConnection()->query('DROP FUNCTION IF EXISTS ECOMDEV_CLEAN_URL_KEY');
 
 $this->getConnection()->query("
+DELIMITER $$
 CREATE FUNCTION ECOMDEV_CLEAN_URL_KEY(
         _url_key VARCHAR(255) CHARSET utf8
     )  RETURNS varchar(255) CHARSET utf8 READS SQL DATA
@@ -541,7 +542,8 @@ BEGIN
    END WHILE;
 
 RETURN TRIM(BOTH '-' FROM CONCAT('', _clean_url_key));
-END
+END$$
+DELIMITER ;
 ");
 
 $this->getConnection()->update(
